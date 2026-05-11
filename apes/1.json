@@ -1,0 +1,27 @@
+{
+  "name": "Nox Ape #1",
+  "description": "A digital ape from the Nox colony. Each ape is uniquely generated with trait combinations on-chain.",
+  "image": "ipfs://QmImages/1.png",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Royal"
+    },
+    {
+      "trait_type": "Fur",
+      "value": "Caramel"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Diamond"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Silly"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Blue"
+    }
+  ]
+}
