@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Nox Apes — Mint</title>
+  <meta name="description" content="Nox Apes — A generative NFT collection of 3,333 unique digital apes on Polygon. Mint yours." />
+  <meta property="og:title" content="Nox Apes" />
+  <meta property="og:description" content="Generative NFT collection of 3,333 unique digital apes on Polygon." />
+  <meta property="og:image" content="https://nft.thealpha-secret.xyz/preview.png" />
+  <meta property="og:url" content="https://nft.thealpha-secret.xyz" />
+  <link rel="canonical" href="https://nft.thealpha-secret.xyz" />
+  <style>
+    :root {
+      --gold: #d4a843;
+      --gold-light: #f0d080;
+      --navy: #0a1628;
+      --navy-light: #132044;
+      --text: #e8e0d0;
+      --text-muted: #a09880;
+      --green: #4caf7d;
+      --red: #e8605a;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Georgia', serif;
+      background: var(--navy);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(212,168,67,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 100%, rgba(0,0,0,0.3) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 500px;
+      width: 100%;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 36px;
+      color: var(--gold);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 30px;
+      letter-spacing: 1px;
+    }
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 28px;
+      color: var(--gold-light);
+      font-weight: 700;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .preview {
+      width: 280px;
+      height: 280px;
+      margin: 0 auto 20px;
+      border-radius: 16px;
+      background: var(--navy-light);
+      border: 1px solid rgba(212,168,67,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .preview svg { width: 100%; height: 100%; }
+    .preview-placeholder {
+      color: var(--text-muted);
+      font-size: 13px;
+      text-align: center;
+      line-height: 1.4;
+    }
+    .price-tag {
+      font-size: 18px;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+    .price-tag strong { color: var(--gold-light); }
+    .btn {
+      display: inline-block;
+      padding: 16px 48px;
+      background: linear-gradient(135deg, #a07830, #d4a843);
+      color: var(--navy);
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      width: 100%;
+      max-width: 320px;
+    }
+    .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(212,168,67,0.3); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 12px 32px;
+      font-size: 13px;
+    }
+    .wallet-btn {
+      background: transparent;
+      border: 1px solid rgba(212,168,67,0.3);
+      color: var(--gold);
+      padding: 12px 24px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      width: auto;
+    }
+    .wallet-btn:hover { border-color: var(--gold); }
+    .info {
+      margin-top: 24px;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+    .info a { color: var(--gold); }
+    .status {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .status.success { background: rgba(76,175,125,0.15); color: var(--green); }
+    .status.error { background: rgba(232,96,90,0.15); color: var(--red); }
+    .status.pending { background: rgba(212,168,67,0.1); color: var(--gold); }
+    .hidden { display: none; }
+    footer {
+      margin-top: 40px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.15);
+    }
+    @media (max-width: 480px) {
+      h1 { font-size: 28px; }
+      .preview { width: 220px; height: 220px; }
+      .stats { gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>NOX APES</h1>
+    <p class="subtitle">Generative NFT Collection &bull; Polygon</p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num" id="minted">0</div>
+        <div class="stat-label">Minted</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="supply">3333</div>
+        <div class="stat-label">Supply</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="price">0.0001</div>
+        <div class="stat-label">MATIC</div>
+      </div>
+    </div>
+
+    <div class="preview" id="preview">
+      <div class="preview-placeholder">
+        <div style="font-size:48px">🐵</div>
+        Connect wallet to preview<br>your ape
+      </div>
+    </div>
+
+    <div class="price-tag">
+      Mint an Ape — <strong>0.0001 MATIC</strong>
+    </div>
+
+    <button class="btn wallet-btn" id="connectBtn" onclick="connectWallet()">
+      🔗 Connect Wallet
+    </button>
+
+    <button class="btn" id="mintBtn" onclick="mintApe()" disabled>
+      Mint Nox Ape
+    </button>
+
+    <div id="status" class="status hidden"></div>
+
+    <div class="info">
+      <p>Contract: <a href="https://polygonscan.com/address/0x172ff1477069c0460bba0d6982772335401d950f" target="_blank">0x172f...d950f</a></p>
+      <p>5% royalties &bull; On-chain traits &bull; 12,960 combinations</p>
+    </div>
+
+    <footer>Nox &copy; 2026 &bull; π = 4/√φ</footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/web3@4.16.0/dist/web3.min.js"></script>
+  <script>
+    const CONTRACT_ADDR = '0x172ff1477069c0460bba0d6982772335401d950f';
+    let web3, account;
+
+    // Load ABI
+    fetch('abi.json').then(r => r.json()).then(abi => window.abi = abi);
+
+    async function connectWallet() {
+      if (!window.ethereum) {
+        showStatus('Please install MetaMask or another Web3 wallet.', 'error');
+        return;
+      }
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        account = accounts[0];
+        web3 = new Web3(window.ethereum);
+        document.getElementById('connectBtn').textContent = '✓ ' + account.slice(0,6) + '...' + account.slice(-4);
+        document.getElementById('mintBtn').disabled = false;
+        showStatus('Wallet connected! Ready to mint.', 'success');
+        updateStats();
+        window.ethereum.on('accountsChanged', (acc) => {
+          if (acc.length === 0) disconnect();
+          else { account = acc[0]; document.getElementById('connectBtn').textContent = '✓ ' + account.slice(0,6) + '...' + account.slice(-4); }
+        });
+      } catch(e) {
+        showStatus('Connection rejected.', 'error');
+      }
+    }
+
+    async function mintApe() {
+      if (!account) { showStatus('Connect your wallet first.', 'error'); return; }
+      if (!window.abi) { showStatus('Loading contract ABI...', 'pending'); return; }
+
+      const btn = document.getElementById('mintBtn');
+      btn.disabled = true;
+      btn.textContent = 'Minting...';
+      showStatus('Sending transaction...', 'pending');
+
+      try {
+        const contract = new web3.eth.Contract(window.abi, CONTRACT_ADDR);
+        const tx = await contract.methods.mintApe().send({
+          from: account,
+          value: web3.utils.toWei('0.0001', 'ether')
+        });
+        const tokenId = tx.events.ApeMinted?.returnValues?.tokenId || '?';
+        showStatus('✅ Ape #' + tokenId + ' minted! View on OpenSea soon.', 'success');
+        updateStats();
+      } catch(e) {
+        showStatus('Mint failed: ' + (e.message?.substring(0,80) || 'Unknown error'), 'error');
+      }
+      btn.disabled = false;
+      btn.textContent = 'Mint Nox Ape';
+    }
+
+    async function updateStats() {
+      if (!web3 || !window.abi) return;
+      try {
+        const contract = new web3.eth.Contract(window.abi, CONTRACT_ADDR);
+        const total = await contract.methods.totalMinted().call();
+        document.getElementById('minted').textContent = total;
+      } catch(e) { /* ignore */ }
+    }
+
+    function showStatus(msg, type) {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = 'status ' + type;
+      el.classList.remove('hidden');
+    }
+
+    function disconnect() {
+      account = null;
+      web3 = null;
+      document.getElementById('connectBtn').textContent = '🔗 Connect Wallet';
+      document.getElementById('mintBtn').disabled = true;
+      showStatus('Disconnected.', '');
+    }
+
+    // Auto-connect if already authorized
+    if (window.ethereum) {
+      window.ethereum.request({ method: 'eth_accounts' }).then(acc => {
+        if (acc.length > 0) { account = acc[0]; web3 = new Web3(window.ethereum); document.getElementById('connectBtn').textContent = '✓ ' + account.slice(0,6) + '...' + account.slice(-4); document.getElementById('mintBtn').disabled = false; }
+      });
+    }
+    updateStats();
+  </script>
+</body>
+</html>
