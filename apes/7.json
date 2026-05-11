@@ -1,23 +1,23 @@
 {
-  "name": "Nox Ape #1",
+  "name": "Nox Ape #7",
   "description": "A pixel ape from the Nox colony. 8-bit retro style.",
-  "image": "https://nft.thealpha-secret.xyz/apes/1.jpg",
+  "image": "https://nft.thealpha-secret.xyz/apes/7.jpg",
   "attributes": [
     {
       "trait_type": "Background",
-      "value": "Blue"
+      "value": "Light Blue"
     },
     {
       "trait_type": "Fur",
-      "value": "Brown"
+      "value": "Gray"
     },
     {
       "trait_type": "Hat",
-      "value": "Red Cap"
+      "value": "Pink Band"
     },
     {
       "trait_type": "Eyes",
-      "value": "Brown"
+      "value": "Pink"
     }
   ]
 }
