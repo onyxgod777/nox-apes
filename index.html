@@ -208,6 +208,12 @@
       🔗 Connect Wallet
     </button>
 
+    <div id="mobileHelp" class="status pending hidden" style="margin-top:16px">
+      📱 On mobile? Open in your wallet's browser:<br><br>
+      <a href="https://metamask.app.link/dapp/onyxgod777.github.io/nox-apes/" style="color:var(--gold-light)">Open in MetaMask →</a><br><br>
+      <span style="font-size:12px">Or: MetaMask app → Browser → go to onyxgod777.github.io/nox-apes/</span>
+    </div>
+
     <button class="btn" id="mintBtn" onclick="mintApe()" disabled>
       Mint Nox Ape
     </button>
@@ -231,25 +237,41 @@
     fetch('abi.json').then(r => r.json()).then(abi => window.abi = abi);
 
     async function connectWallet() {
-      if (!window.ethereum) {
-        showStatus('Please install MetaMask or another Web3 wallet.', 'error');
+      // Mobile wallets inject ethereum in their in-app browser (MetaMask, OKX, Rainbow, etc.)
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          account = accounts[0];
+          web3 = new Web3(window.ethereum);
+          document.getElementById('connectBtn').textContent = '✓ ' + account.slice(0,6) + '...' + account.slice(-4);
+          document.getElementById('mintBtn').disabled = false;
+          document.getElementById('mobileHelp').classList.add('hidden');
+          showStatus('Wallet connected! Ready to mint.', 'success');
+          updateStats();
+          window.ethereum.on('accountsChanged', (acc) => {
+            if (acc.length === 0) disconnect();
+            else { account = acc[0]; document.getElementById('connectBtn').textContent = '✓ ' + account.slice(0,6) + '...' + account.slice(-4); }
+          });
+          return;
+        } catch(e) {
+          showStatus('Connection rejected.', 'error');
+          return;
+        }
+      }
+      
+      // Desktop — no wallet installed
+      if (!isMobile()) {
+        showStatus('Install MetaMask or OKX Wallet browser extension to mint.', 'error');
         return;
       }
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        account = accounts[0];
-        web3 = new Web3(window.ethereum);
-        document.getElementById('connectBtn').textContent = '✓ ' + account.slice(0,6) + '...' + account.slice(-4);
-        document.getElementById('mintBtn').disabled = false;
-        showStatus('Wallet connected! Ready to mint.', 'success');
-        updateStats();
-        window.ethereum.on('accountsChanged', (acc) => {
-          if (acc.length === 0) disconnect();
-          else { account = acc[0]; document.getElementById('connectBtn').textContent = '✓ ' + account.slice(0,6) + '...' + account.slice(-4); }
-        });
-      } catch(e) {
-        showStatus('Connection rejected.', 'error');
-      }
+      
+      // Mobile — no in-app browser
+      document.getElementById('mobileHelp').classList.remove('hidden');
+      showStatus('Open this page inside your wallet app\'s browser.', 'pending');
+    }
+    
+    function isMobile() {
+      return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     }
 
     async function mintApe() {
