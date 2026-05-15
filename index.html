@@ -916,15 +916,16 @@
           return;
         }
       }
-      // Fallback: launch OKX Wallet deep link or WalletConnect
-      showStatus('Opening OKX Wallet...', 'pending');
-      var okxUrl = 'okx://wallet/dapp/url?dappUrl=' + encodeURIComponent(window.location.href);
+      // Official OKX universal deeplink
+      var dappUrl = window.location.href;
+      var deepLink = 'okx://wallet/dapp/url?dappUrl=' + encodeURIComponent(dappUrl);
+      var okxUrl = 'https://web3.okx.com/download?deeplink=' + encodeURIComponent(deepLink);
+      showStatus('Opening OKX Wallet app...', 'pending');
       window.location.href = okxUrl;
       setTimeout(function() {
-        // If deep link didn't work, try WalletConnect
         hideWalletList();
-        connectWalletConnect();
-      }, 2000);
+        showStatus('Did OKX open? If not, use WalletConnect button instead.', 'info');
+      }, 3000);
     }
 
     // ── Coinbase Wallet ──
