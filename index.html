@@ -903,7 +903,7 @@
       showStatus('MetaMask not found. Install the extension or try another wallet.', 'error');
     }
 
-        // ── Mobile Wallet (QR + MetaMask deep link) ──
+    // ── Mobile Wallet (QR + MetaMask deep link) ──
     async function connectWalletConnect() {
       document.getElementById('mobileHelp').classList.remove('hidden');
       var existing = document.getElementById('mobileQr');
@@ -915,7 +915,7 @@
       }
       hideWalletList();
       showStatus('', '');
-    }    }
+    }
 
     // ── Coinbase Wallet ──
     async function connectCoinbase() {
