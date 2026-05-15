@@ -1078,13 +1078,13 @@
       const btn = document.getElementById('mintBtn');
       btn.disabled = true;
       btn.textContent = 'Minting...';
-      showStatus('Sending transaction...', 'pending');
+      showStatus('Confirm the 0.0001 POL transaction in your wallet...', 'pending');
 
       try {
         const contract = new web3.eth.Contract(window.abi, CONTRACT_ADDR);
         const tx = await contract.methods.mintApe().send({
           from: account,
-          value: web3.utils.toWei('0.0001', 'ether')
+          value: '100000000000000' // 0.0001 POL in wei (not ETH)
         });
         const tokenId = tx.events.ApeMinted?.returnValues?.tokenId || '?';
         showStatus('\u2705 Ape #' + tokenId + ' minted! View on OpenSea soon.', 'success');
