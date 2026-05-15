@@ -916,7 +916,15 @@
           return;
         }
       }
-      showStatus('OKX Wallet not found. Install from okx.com/wallet.', 'error');
+      // Fallback: launch OKX Wallet deep link or WalletConnect
+      showStatus('Opening OKX Wallet...', 'pending');
+      var okxUrl = 'okx://wallet/dapp/url?dappUrl=' + encodeURIComponent(window.location.href);
+      window.location.href = okxUrl;
+      setTimeout(function() {
+        // If deep link didn't work, try WalletConnect
+        hideWalletList();
+        connectWalletConnect();
+      }, 2000);
     }
 
     // ── Coinbase Wallet ──
