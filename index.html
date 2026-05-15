@@ -678,7 +678,7 @@
 
     <!-- CONNECT / MINT -->
     <div class="btn-section" id="walletOptions">
-      <button class="btn wallet-btn" id="connectBtn" onclick="connectWallet()" style="width:220px;">
+      <button class="btn wallet-btn" id="connectBtn" onclick="showWalletList()" style="width:220px;">
         <span id="btnIcon">&#x1F517;</span> <span id="btnLabel">Connect Wallet</span>
       </button>
     </div>
@@ -687,20 +687,22 @@
       <button class="btn wallet-btn" onclick="connectMetaMask()" style="width:220px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;">
         <svg height="16" viewBox="0 0 96 96"><path d="M88 8L52 44l-4-12 20-24h20z" fill="#e2761b"/><path d="M8 8l35.5 36.5 4-12L28 8H8z" fill="#e4761b"/><path d="M42 56l8 14-4 18-16-14 12-18z" fill="#cd6116"/><path d="M54 56l-8 14 4 18 16-14-12-18z" fill="#e3731a"/><path d="M50 70l-4-8-16 6 20 6z" fill="#f58423"/><path d="M50 70l4-8 16 6-20 6z" fill="#c9ad38"/><path d="M30 44l-8 6 16 4 4-10-12 0z" fill="#cd6116"/><path d="M66 44l8 6-16 4-4-10 12 0z" fill="#e3731a"/><path d="M38 48l2 12-6 4-6-12 10-4z" fill="#f58423"/><path d="M58 48l-2 12 6 4 6-12-10-4z" fill="#c9ad38"/><path d="M36 64l18 4-4 8-14-12z" fill="#db6e29"/><path d="M60 64l-18 4 4 8 14-12z" fill="#c9ad38"/></svg> MetaMask
       </button>
-      <button class="btn wallet-btn" onclick="connectWalletConnect()" style="width:220px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;">
-        &#x1F4F1; Mobile Wallet
+      <button class="btn wallet-btn" onclick="connectOKX()" style="width:220px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;">
+        <span style="font-weight:bold;color:#1a82ff;">O</span><span style="font-weight:bold;color:#000;">K</span><span style="font-weight:bold;color:#1a82ff;">X</span> Wallet
       </button>
       <button class="btn wallet-btn" onclick="connectCoinbase()" style="width:220px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;">
         &#x1F4CB; Coinbase
+      </button>
+      <button class="btn wallet-btn" onclick="connectWalletConnect()" style="width:220px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;">
+        &#x1F517; WalletConnect
       </button>
       <button onclick="hideWalletList()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;margin-top:4px;">Cancel</button>
     </div>
 
     <div id="mobileHelp" class="hidden">
-      <p>&#x1F4F1; On mobile? Open in your wallet's browser or use WalletConnect above:</p>
-      <a href="https://metamask.app.link/dapp/onyxgod777.github.io/nox-apes/" style="color:var(--pixel-yellow);font-size:13px;">Open in MetaMask</a>
+      <p>&#x1F4F1; On mobile? Open in your wallet app's browser:</p>
+      <p style="font-size:11px;"><a href="https://metamask.app.link/dapp/onyxgod777.github.io/nox-apes/" style="color:var(--pixel-yellow);">Open in MetaMask</a></p>
     </div>
-
     <button class="btn btn-mint" id="mintBtn" onclick="mintApe()" disabled>
       Mint Nox Ape
     </button>
@@ -866,10 +868,9 @@
       document.getElementById('walletList').style.display = 'none';
     }
 
-    function onConnect(web3Instance, addr, prov) {
+    function onConnect(web3Instance, addr) {
       account = addr;
       web3 = web3Instance;
-      provider = prov;
       document.getElementById('btnIcon').innerHTML = '\u2713';
       document.getElementById('btnLabel').textContent = account.slice(0, 6) + '...' + account.slice(-4);
       document.getElementById('mintBtn').disabled = false;
@@ -879,16 +880,14 @@
       updateStats();
     }
 
-    async function connectWallet() {
-      showWalletList();
-    }
+    async function connectWallet() { showWalletList(); }
 
-    // ── MetaMask / Injected ──
+    // ── MetaMask / Any window.ethereum ──
     async function connectMetaMask() {
       if (window.ethereum) {
         try {
           const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          onConnect(new Web3(window.ethereum), accounts[0], window.ethereum);
+          onConnect(new Web3(window.ethereum), accounts[0]);
           window.ethereum.on('accountsChanged', function(acc) {
             if (acc.length === 0) disconnect();
             else { account = acc[0]; document.getElementById('btnLabel').textContent = account.slice(0, 6) + '...' + account.slice(-4); }
@@ -900,23 +899,86 @@
           return;
         }
       }
-      showStatus('MetaMask not found. Install the extension or try another wallet.', 'error');
+      showStatus('Install MetaMask or any injected wallet extension.', 'error');
     }
 
-    // ── Mobile Wallet (QR + MetaMask deep link) ──
-    async function connectWalletConnect() {
-      document.getElementById('mobileHelp').classList.remove('hidden');
-      var existing = document.getElementById('mobileQr');
-      if (!existing) {
-        document.getElementById('mobileHelp').innerHTML = '<p>&#x1F4F1; Scan with your wallet app:</p>'
-          + '<img id="mobileQr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(window.location.href) + '" style="width:180px;height:180px;border-radius:12px;margin:8px auto;display:block;" alt="QR code for wallet"/>'
-          + '<p style="font-size:12px;color:var(--text-muted);margin:4px 0;">Open your wallet app &rarr; scan QR &rarr; connect &rarr; mint</p>'
-          + '<p style="font-size:11px;margin:0;"><a href="https://metamask.app.link/dapp/onyxgod777.github.io/nox-apes/" style="color:var(--pixel-yellow);">Open in MetaMask</a></p>';
+    // ── OKX Wallet ──
+    async function connectOKX() {
+      var okxProvider = window.okxwallet || (window.ethereum && window.ethereum.isOKXWallet ? window.ethereum : null);
+      if (okxProvider) {
+        try {
+          const accounts = await okxProvider.request({ method: 'eth_requestAccounts' });
+          onConnect(new Web3(okxProvider), accounts[0]);
+          return;
+        } catch (e) {
+          showStatus('OKX connection rejected.', 'error');
+          hideWalletList();
+          return;
+        }
       }
-      hideWalletList();
-      showStatus('', '');
+      showStatus('OKX Wallet not found. Install from okx.com/wallet.', 'error');
     }
 
+    // ── Coinbase Wallet ──
+    async function connectCoinbase() {
+      if (window.coinbaseWalletExtension) {
+        try {
+          var accounts = await window.coinbaseWalletExtension.request({ method: 'eth_requestAccounts' });
+          onConnect(new Web3(window.coinbaseWalletExtension), accounts[0]);
+          return;
+        } catch (e) {
+          showStatus('Coinbase connection rejected.', 'error');
+          hideWalletList();
+          return;
+        }
+      }
+      showStatus('Coinbase Wallet not found.', 'error');
+    }
+
+    // ── WalletConnect ──
+    async function connectWalletConnect() {
+      if (typeof WalletConnectProvider === 'undefined') {
+        showStatus('Loading WalletConnect...', 'pending');
+        try {
+          await loadScript('https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js');
+        } catch(e) {
+          showStatus('Could not load WalletConnect. Use MetaMask or OKX instead.', 'error');
+          hideWalletList();
+          return;
+        }
+      }
+      try {
+        var wcProvider = new WalletConnectProvider.default({
+          infuraId: null,
+          rpc: { 137: 'https://polygon-rpc.com' },
+          chainId: 137,
+          qrcode: true
+        });
+        await wcProvider.enable();
+        var wcWeb3 = new Web3(wcProvider);
+        var accounts = await wcWeb3.eth.getAccounts();
+        onConnect(wcWeb3, accounts[0]);
+      } catch (e) {
+        showStatus('WalletConnect cancelled or failed.', 'error');
+        hideWalletList();
+      }
+    }
+
+    function loadScript(src) {
+      return new Promise(function(resolve, reject) {
+        var s = document.createElement('script');
+        s.src = src;
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+
+    function isMobile() {
+      return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
+
+    // ── Coinbase Wallet ──
     // ── Coinbase Wallet ──
     async function connectCoinbase() {
       if (window.coinbaseWalletExtension) {
