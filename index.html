@@ -868,16 +868,51 @@
       document.getElementById('walletList').style.display = 'none';
     }
 
-    function onConnect(web3Instance, addr) {
+    function onConnect(web3Instance, addr, provider) {
       account = addr;
       web3 = web3Instance;
+      provider = provider || (window.ethereum || window.okxwallet);
       document.getElementById('btnIcon').innerHTML = '\u2713';
       document.getElementById('btnLabel').textContent = account.slice(0, 6) + '...' + account.slice(-4);
       document.getElementById('mintBtn').disabled = false;
       document.getElementById('mobileHelp').classList.add('hidden');
       hideWalletList();
-      showStatus('Wallet connected! Ready to mint.', 'success');
+      showStatus('Wallet connected! Switching to Polygon...', 'pending');
+      switchToPolygon(provider);
       updateStats();
+    }
+
+    async function switchToPolygon(provider) {
+      if (!provider) return;
+      try {
+        await provider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x89' }] // 137 in hex
+        });
+        showStatus('Connected to Polygon! Ready to mint.', 'success');
+      } catch (e) {
+        if (e.code === 4902) {
+          try {
+            await provider.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: '0x89',
+                chainName: 'Polygon',
+                nativeCurrency: { name: 'POL', symbol: 'POL', decimals: 18 },
+                rpcUrls: ['https://polygon-rpc.com'],
+                blockExplorerUrls: ['https://polygonscan.com']
+              }]
+            });
+            showStatus('Polygon added! Ready to mint.', 'success');
+          } catch (e2) {
+            showStatus('Connected, but switch to Polygon manually in your wallet.', 'info');
+          }
+        } else if (e.code === 4001) {
+          showStatus('Connected. Switch to Polygon manually to mint.', 'info');
+        } else {
+          showStatus('Connected. Make sure you are on Polygon network.', 'info');
+        }
+      }
     }
 
     async function connectWallet() { showWalletList(); }
@@ -887,10 +922,10 @@
       if (window.ethereum) {
         try {
           const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          onConnect(new Web3(window.ethereum), accounts[0]);
+          onConnect(new Web3(window.ethereum), accounts[0], window.ethereum);
           window.ethereum.on('accountsChanged', function(acc) {
             if (acc.length === 0) disconnect();
-            else { account = acc[0]; document.getElementById('btnLabel').textContent = account.slice(0, 6) + '...' + account.slice(-4); }
+            else { account = acc[0]; document.getElementById('btnLabel').textContent = account.slice(0, 6) + '...' + account.slice(-4); switchToPolygon(window.ethereum); }
           });
           return;
         } catch (e) {
@@ -908,7 +943,7 @@
       if (okxProvider) {
         try {
           const accounts = await okxProvider.request({ method: 'eth_requestAccounts' });
-          onConnect(new Web3(okxProvider), accounts[0]);
+          onConnect(new Web3(okxProvider), accounts[0], okxProvider);
           return;
         } catch (e) {
           showStatus('OKX connection rejected.', 'error');
@@ -933,7 +968,7 @@
       if (window.coinbaseWalletExtension) {
         try {
           var accounts = await window.coinbaseWalletExtension.request({ method: 'eth_requestAccounts' });
-          onConnect(new Web3(window.coinbaseWalletExtension), accounts[0]);
+          onConnect(new Web3(window.coinbaseWalletExtension), accounts[0], window.coinbaseWalletExtension);
           return;
         } catch (e) {
           showStatus('Coinbase connection rejected.', 'error');
