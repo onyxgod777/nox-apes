@@ -885,13 +885,21 @@
     async function switchToPolygon(provider) {
       if (!provider) return;
       try {
+        // First check what chain we're actually on
+        var currentChainId = await provider.request({ method: 'eth_chainId' });
+        if (currentChainId === '0x89') {
+          showStatus('Already on Polygon! Ready to mint.', 'success');
+          return;
+        }
+        // Switch to Polygon
         await provider.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x89' }] // 137 in hex
+          params: [{ chainId: '0x89' }]
         });
-        showStatus('Connected to Polygon! Ready to mint.', 'success');
+        showStatus('Switched to Polygon! Ready to mint.', 'success');
       } catch (e) {
         if (e.code === 4902) {
+          // Polygon not added - add it
           try {
             await provider.request({
               method: 'wallet_addEthereumChain',
@@ -905,12 +913,12 @@
             });
             showStatus('Polygon added! Ready to mint.', 'success');
           } catch (e2) {
-            showStatus('Connected, but switch to Polygon manually in your wallet.', 'info');
+            showStatus('Connected. Switch to Polygon manually in your wallet.', 'info');
           }
         } else if (e.code === 4001) {
           showStatus('Connected. Switch to Polygon manually to mint.', 'info');
         } else {
-          showStatus('Connected. Make sure you are on Polygon network.', 'info');
+          showStatus('Connected. Make sure you are on the Polygon network.', 'info');
         }
       }
     }
@@ -1051,6 +1059,21 @@
     async function mintApe() {
       if (!account) { showStatus('Connect your wallet first.', 'error'); return; }
       if (!window.abi) { showStatus('Loading contract ABI...', 'pending'); return; }
+
+      // Verify we're on Polygon
+      if (provider && provider.request) {
+        try {
+          var networkId = await provider.request({ method: 'eth_chainId' });
+          if (networkId !== '0x89') {
+            showStatus('Switch to Polygon network (chain ID 137) to mint.', 'error');
+            document.getElementById('mintBtn').disabled = false;
+            document.getElementById('mintBtn').textContent = 'Mint Nox Ape';
+            var okxProvider = window.okxwallet || (window.ethereum && window.ethereum.isOKXWallet ? window.ethereum : null);
+            switchToPolygon(okxProvider || window.ethereum);
+            return;
+          }
+        } catch(e) {}
+      }
 
       const btn = document.getElementById('mintBtn');
       btn.disabled = true;
